@@ -172,24 +172,33 @@ io.on('connection', (socket) => {
     }
 
     // 通常のサイコロ処理
-    const dice = Math.floor(Math.random() * 6) + 1;
-    io.to(roomId).emit("diceResult", dice);
+socket.on('rollDice', (roomId) => {
+  const room = rooms[roomId];
+  const player = room.players[room.turn];
 
-    const oldPos = player.pos;
-    player.pos = (player.pos + dice) % room.board.length;
+  // 2つのサイコロ
+  const dice1 = Math.floor(Math.random() * 6) + 1;
+  const dice2 = Math.floor(Math.random() * 6) + 1;
+  const total = dice1 + dice2;
 
-    // GO通過ボーナス
-    if (oldPos + dice >= room.board.length) {
-      player.money += 200;
-      room.lastMessage = `${player.name} はGOを通過して +200！`;
-    }
+  io.to(roomId).emit("diceResult", { dice1, dice2, total });
 
-    const tile = room.board[player.pos];
-    handleTile(player, tile, room);
+  const oldPos = player.pos;
+  player.pos = (player.pos + total) % room.board.length;
 
-    room.turn = (room.turn + 1) % room.players.length;
-    io.to(roomId).emit('stateUpdate', room);
-  });
+  // GO通過
+  if (oldPos + total >= room.board.length) {
+    player.money += 200;
+    room.lastMessage = `${player.name} はGOを通過して +200！`;
+  }
+
+  const tile = room.board[player.pos];
+  handleTile(player, tile, room);
+
+  room.turn = (room.turn + 1) % room.players.length;
+  io.to(roomId).emit('stateUpdate', room);
+});
+
 });
 
 //
