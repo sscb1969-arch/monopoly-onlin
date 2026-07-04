@@ -17,20 +17,14 @@ function rollDice() {
   socket.emit("rollDice", roomId);
 }
 
-// 家を建てる（手動建設ボタン）
-function buildHouse(index) {
-  const roomId = document.getElementById("room").value;
-  socket.emit("buildHouse", roomId, index);
-}
-
 // 物件選択（購入 / 建設 / スルー）
 function chooseProperty(choice) {
   const roomId = document.getElementById("room").value;
   socket.emit("propertyChoice", roomId, choice);
 }
 
-// サイコロ結果（音＋3D回転）
-socket.on("diceResult", (dice) => {
+// サイコロ結果（2つ）
+socket.on("diceResult", ({ dice1, dice2, total }) => {
   const diceBox = document.getElementById("dice");
   const resultText = document.getElementById("dice-result");
   const diceSound = document.getElementById("dice-sound");
@@ -38,17 +32,12 @@ socket.on("diceResult", (dice) => {
   diceSound.currentTime = 0;
   diceSound.play();
 
-  resultText.innerText = `🎲 ${dice}`;
+  resultText.innerText = `🎲 ${dice1} + ${dice2} = ${total}`;
 
-  const rotations = {
-    1: "rotateX(0deg) rotateY(0deg)",
-    2: "rotateY(-90deg)",
-    3: "rotateY(180deg)",
-    4: "rotateY(90deg)",
-    5: "rotateX(-90deg)",
-    6: "rotateX(90deg)"
-  };
-  diceBox.style.transform = rotations[dice];
+  diceBox.innerHTML = `
+    <div class="dice-face">🎲${dice1}</div>
+    <div class="dice-face">🎲${dice2}</div>
+  `;
 });
 
 // stateUpdate（盤面・プレイヤー・メッセージ・選択肢）
@@ -152,7 +141,7 @@ function renderBoard(board) {
   renderPlayerIcons(board);
 }
 
-// プレイヤーアイコン表示
+// プレイヤーアイコン表示（マス上）
 function renderPlayerIcons(board) {
   const players = window.latestPlayers || [];
   const tiles = document.querySelectorAll("#board .tile");
@@ -182,9 +171,9 @@ function getColor(color) {
   return colors[color] || "#ccc";
 }
 
-// プレイヤー情報表示
+// プレイヤー情報表示（中央）
 function renderPlayers(players, turn) {
-  const playersDiv = document.getElementById("players");
+  const playersDiv = document.getElementById("players-center");
   playersDiv.innerHTML = "";
 
   players.forEach((p, i) => {
