@@ -7,7 +7,6 @@ function joinGame() {
 
   socket.emit("joinRoom", roomId, name);
 
-  // 参加欄を非表示
   document.querySelector(".join-box").style.display = "none";
 }
 
@@ -21,6 +20,21 @@ function rollDice() {
 function chooseProperty(choice) {
   const roomId = document.getElementById("room").value;
   socket.emit("propertyChoice", roomId, choice);
+}
+
+// タイル上の建設ボタン用（簡易ラッパー）
+function buildHouse(index) {
+  chooseProperty("build");
+}
+
+// チャット送信
+function sendChat() {
+  const roomId = document.getElementById("room").value;
+  const text = document.getElementById("chat-input").value;
+  if (!text) return;
+
+  socket.emit("chatMessage", roomId, text);
+  document.getElementById("chat-input").value = "";
 }
 
 // サイコロ結果（2つ）
@@ -60,6 +74,23 @@ socket.on("stateUpdate", (state) => {
       <button onclick="chooseProperty('skip')">スルーする</button>
     `;
   }
+
+  // 自分の手番以外はサイコロボタンを無効化
+  const rollBtn = document.getElementById("roll-button");
+  if (state.players[state.turn].id === socket.id) {
+    rollBtn.disabled = false;
+  } else {
+    rollBtn.disabled = true;
+  }
+});
+
+// チャット受信
+socket.on("chatMessage", (msg) => {
+  const box = document.getElementById("chat-box");
+  const div = document.createElement("div");
+  div.innerHTML = `<b>${msg.name}:</b> ${msg.text}`;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
 });
 
 // 正方形外周ボード表示
@@ -74,7 +105,6 @@ function renderBoard(board) {
     const div = document.createElement("div");
     div.className = "tile";
 
-    // 外周配置
     let x = 0, y = 0;
 
     if (index < 6) {
@@ -94,7 +124,6 @@ function renderBoard(board) {
     div.style.left = x + "px";
     div.style.top = y + "px";
 
-    // マスタイプごとの表示
     if (tile.type === "start") {
       div.classList.add("go");
       div.innerText = "GO";
@@ -152,6 +181,7 @@ function renderPlayerIcons(board) {
 
     const icon = document.createElement("div");
     icon.className = "player-icon";
+    icon.style.background = p.color; // プレイヤーごとに色
     tile.appendChild(icon);
   });
 }
