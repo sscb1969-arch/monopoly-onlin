@@ -4,6 +4,10 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 
 app.use(express.static('public'));
+
+//
+// 盤面生成（20マス）
+//
 function generateBoard() {
   return [
     // 上辺（0〜5）
@@ -36,7 +40,9 @@ function generateBoard() {
   ];
 }
 
-
+//
+// カード
+//
 const chanceCards = [
   { type: "money", amount: 200, text: "銀行から200もらう" },
   { type: "money", amount: -100, text: "罰金100を払う" },
@@ -59,6 +65,7 @@ function hasFullColorSet(player, board, color) {
   const tiles = board.filter(t => t.type === 'property' && t.color === color);
   return tiles.every(t => t.owner === player.id);
 }
+
 //
 // ルームデータ
 //
@@ -95,7 +102,7 @@ io.on('connection', (socket) => {
   });
 
   //
-  // 物件に止まったときの選択肢（購入 / 建設 / スルー）
+  // 物件選択（購入 / 建設 / スルー）
   //
   socket.on("propertyChoice", (roomId, choice) => {
     const room = rooms[roomId];
@@ -131,7 +138,7 @@ io.on('connection', (socket) => {
     }
 
     if (choice === "skip") {
-      tile.price = Math.floor(tile.price * 1.2); // 20%値上げ
+      tile.price = Math.floor(tile.price * 1.2);
       room.lastMessage = `${tile.name} の価格が上昇しました（${tile.price}）`;
     }
 
@@ -140,64 +147,32 @@ io.on('connection', (socket) => {
   });
 
   //
-  // サイコロを振る
+  // サイコロ（2つ）
   //
   socket.on('rollDice', (roomId) => {
     const room = rooms[roomId];
     const player = room.players[room.turn];
 
-    // 刑務所チェック
-    if (player.jail) {
-      const dice = Math.floor(Math.random() * 6) + 1;
-      io.to(roomId).emit("diceResult", dice);
+    const dice1 = Math.floor(Math.random() * 6) + 1;
+    const dice2 = Math.floor(Math.random() * 6) + 1;
+    const total = dice1 + dice2;
 
-      if (dice === 6) {
-        player.jail = false;
-        player.jailTurn = 0;
-        room.lastMessage = `${player.name} は6を出して刑務所から脱出！`;
-      } else {
-        player.jailTurn++;
-        room.lastMessage = `${player.name} は刑務所にいます（${player.jailTurn}/3）`;
+    io.to(roomId).emit("diceResult", { dice1, dice2, total });
 
-        if (player.jailTurn >= 3) {
-          player.jail = false;
-          player.jailTurn = 0;
-          room.lastMessage = `${player.name} は3ターン経過で刑務所から脱出！`;
-        }
+    const oldPos = player.pos;
+    player.pos = (player.pos + total) % room.board.length;
 
-        room.turn = (room.turn + 1) % room.players.length;
-        io.to(roomId).emit('stateUpdate', room);
-        return;
-      }
+    if (oldPos + total >= room.board.length) {
+      player.money += 200;
+      room.lastMessage = `${player.name} はGOを通過して +200！`;
     }
 
-    // 通常のサイコロ処理
-socket.on('rollDice', (roomId) => {
-  const room = rooms[roomId];
-  const player = room.players[room.turn];
+    const tile = room.board[player.pos];
+    handleTile(player, tile, room);
 
-  // 2つのサイコロ
-  const dice1 = Math.floor(Math.random() * 6) + 1;
-  const dice2 = Math.floor(Math.random() * 6) + 1;
-  const total = dice1 + dice2;
-
-  io.to(roomId).emit("diceResult", { dice1, dice2, total });
-
-  const oldPos = player.pos;
-  player.pos = (player.pos + total) % room.board.length;
-
-  // GO通過
-  if (oldPos + total >= room.board.length) {
-    player.money += 200;
-    room.lastMessage = `${player.name} はGOを通過して +200！`;
-  }
-
-  const tile = room.board[player.pos];
-  handleTile(player, tile, room);
-
-  room.turn = (room.turn + 1) % room.players.length;
-  io.to(roomId).emit('stateUpdate', room);
-});
+    room.turn = (room.turn + 1) % room.players.length;
+    io.to(roomId).emit('stateUpdate', room);
+  });
 
 });
 
@@ -252,6 +227,50 @@ function handleTile(player, tile, room) {
       room.lastMessage = `${player.name} は ${tile.name} の家賃 ${fee} を支払った`;
     }
   }
+}
+
+//
+// チャンス
+//
+function drawChance(player, room) {
+  const card = chanceCards[Math.floor(Math.random() * chanceCards.length)];
+
+  if (card.type === "money") {
+    player.money += card.amount;
+  }
+
+  if (card.type === "move") {
+    player.pos = (player.pos + card.steps + room.board.length) % room.board.length;
+  }
+
+  if (card.type === "goto") {
+    player.pos = card.pos;
+    if (card.pos === 0) player.money += 200;
+  }
+
+  return card.text;
+}
+
+//
+// コミュニティ
+//
+function drawCommunity(player, room) {
+  const card = communityCards[Math.floor(Math.random() * communityCards.length)];
+
+  if (card.type === "money") {
+    player.money += card.amount;
+  }
+
+  if (card.type === "move") {
+    player.pos = (player.pos + card.steps + room.board.length) % room.board.length;
+  }
+
+  if (card.type === "goto") {
+    player.pos = card.pos;
+    if (card.pos === 0) player.money += 200;
+  }
+
+  return card.text;
 }
 
 http.listen(3000, () => console.log('http://localhost:3000'));
