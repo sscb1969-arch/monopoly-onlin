@@ -1,0 +1,25 @@
+body {
+  font-family: sans-serif;
+  padding: 10px;
+}
+
+#board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.tile {
+  border: 1px solid #aaa;
+  padding: 10px;
+  background: #f8f8f8;
+  text-align: center;
+  border-radius: 6px;
+}
+
+.player {
+  margin: 5px 0;
+  padding: 8px;
+  background: #eef;
+  border-radius: 6px;
+}

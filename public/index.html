@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2>オンラインモノポリー風ゲーム</h2>
+
+<div>
+  <input id="room" placeholder="ルームID">
+  <input id="name" placeholder="名前">
+  <button onclick="joinGame()">参加</button>
+</div>
+
+<button onclick="rollDice()">サイコロを振る</button>
+
+<h3>盤面</h3>
+<div id="board"></div>
+
+<h3>プレイヤー</h3>
+<div id="players"></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="client.js"></script>
+</body>
+</html>
