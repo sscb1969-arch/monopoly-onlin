@@ -6,25 +6,13 @@ function joinGame() {
   const name = document.getElementById("name").value;
 
   socket.emit("joinRoom", roomId, name);
-
   document.querySelector(".join-box").style.display = "none";
 }
 
-// サイコロを振る
+// サイコロを振る（1つに変更）
 function rollDice() {
   const roomId = document.getElementById("room").value;
   socket.emit("rollDice", roomId);
-}
-
-// 物件選択（購入 / 建設 / スルー）
-function chooseProperty(choice) {
-  const roomId = document.getElementById("room").value;
-  socket.emit("propertyChoice", roomId, choice);
-}
-
-// タイル上の建設ボタン用
-function buildHouse(index) {
-  chooseProperty("build");
 }
 
 // チャット送信
@@ -37,8 +25,8 @@ function sendChat() {
   document.getElementById("chat-input").value = "";
 }
 
-// サイコロ結果（アニメーション付き）
-socket.on("diceResult", ({ dice1, dice2, total }) => {
+// サイコロ結果（1つ＋アニメーション）
+socket.on("diceResult", ({ dice1, total }) => {
   const diceBox = document.getElementById("dice");
   const resultText = document.getElementById("dice-result");
   const diceSound = document.getElementById("dice-sound");
@@ -46,15 +34,14 @@ socket.on("diceResult", ({ dice1, dice2, total }) => {
   diceSound.currentTime = 0;
   diceSound.play();
 
-  resultText.innerText = `🎲 ${dice1} + ${dice2} = ${total}`;
+  resultText.innerText = `🎲 ${dice1}`;
 
   diceBox.innerHTML = `
     <div class="dice-face animate">🎲${dice1}</div>
-    <div class="dice-face animate">🎲${dice2}</div>
   `;
 });
 
-// stateUpdate（盤面・プレイヤー・メッセージ・選択肢）
+// stateUpdate（ターン制限＋盤面更新）
 socket.on("stateUpdate", (state) => {
   window.latestPlayers = state.players;
 
@@ -64,24 +51,8 @@ socket.on("stateUpdate", (state) => {
   const msgBox = document.getElementById("message-box");
   msgBox.innerText = state.lastMessage || "";
 
-  const choiceBox = document.getElementById("choice-box");
-  choiceBox.innerHTML = "";
-
-  if (state.waitingForChoice && state.waitingForChoice.playerId === socket.id) {
-    choiceBox.innerHTML = `
-      <button onclick="chooseProperty('buy')">購入する</button>
-      <button onclick="chooseProperty('build')">家を建てる</button>
-      <button onclick="chooseProperty('skip')">スルーする</button>
-    `;
-  }
-
-  // 自分の手番以外はサイコロボタンを無効化
   const rollBtn = document.getElementById("roll-button");
-  if (state.players[state.turn].id === socket.id) {
-    rollBtn.disabled = false;
-  } else {
-    rollBtn.disabled = true;
-  }
+  rollBtn.disabled = state.players[state.turn].id !== socket.id;
 
   renderPlayers(state.players, state.turn);
 });
@@ -95,7 +66,7 @@ socket.on("chatMessage", (msg) => {
   box.scrollTop = box.scrollHeight;
 });
 
-// 正方形外周ボード表示
+// 盤面描画（変更なし）
 function renderBoard(board) {
   const boardDiv = document.getElementById("board");
   boardDiv.innerHTML = "";
@@ -126,51 +97,20 @@ function renderBoard(board) {
     div.style.left = x + "px";
     div.style.top = y + "px";
 
-    if (tile.type === "start") {
-      div.classList.add("go");
-      div.innerText = "GO";
-    }
-
-    else if (tile.type === "jail") {
-      div.classList.add("jail");
-      div.innerText = "刑務所";
-    }
-
+    if (tile.type === "start") div.innerText = "GO";
+    else if (tile.type === "jail") div.innerText = "刑務所";
+    else if (tile.type === "chance") div.innerText = "？";
+    else if (tile.type === "community") div.innerText = "箱";
     else if (tile.type === "property") {
       div.style.background = getColor(tile.color);
       div.innerHTML = `<div>${tile.name}</div>`;
-
-      if (tile.house > 0) {
-        div.innerHTML += `<div class="house-icon">🏠×${tile.house}</div>`;
-      }
-      if (tile.hotel) {
-        div.innerHTML += `<div class="hotel-icon">🏨</div>`;
-      }
-
-      div.innerHTML += `<button onclick="buildHouse(${index})">建設</button>`;
-    }
-
-    else if (tile.type === "chance") {
-      div.style.background = "#ffeb3b";
-      div.innerText = "？";
-    }
-
-    else if (tile.type === "community") {
-      div.style.background = "#4fc3f7";
-      div.innerText = "箱";
-    }
-
-    else if (tile.type === "gotojail") {
-      div.style.background = "#000";
-      div.style.color = "#fff";
-      div.innerText = "→刑務所";
     }
 
     boardDiv.appendChild(div);
   });
 }
 
-// プレイヤーアイコン（アニメーション付き）
+// 駒描画（アニメーション）
 function renderPlayerIcons(board) {
   const players = window.latestPlayers || [];
   const layer = document.getElementById("player-layer");
@@ -222,7 +162,7 @@ function getColor(color) {
   return colors[color] || "#ccc";
 }
 
-// プレイヤー情報表示（中央）
+// プレイヤー情報表示
 function renderPlayers(players, turn) {
   const playersDiv = document.getElementById("players-center");
   playersDiv.innerHTML = "";
@@ -236,7 +176,6 @@ function renderPlayers(players, turn) {
       <div>位置: ${p.pos}</div>
       <div>所持金: ${p.money}</div>
       <div>物件: ${p.properties.join(", ")}</div>
-      <div>${p.jail ? "刑務所中" : ""}</div>
     `;
 
     playersDiv.appendChild(div);
