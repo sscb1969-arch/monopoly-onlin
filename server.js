@@ -5,9 +5,6 @@ const io = require('socket.io')(http);
 
 app.use(express.static('public'));
 
-//
-// 盤面生成（モノポリー風）
-//
 function generateBoard() {
   return [
     { type: 'start', name: 'GO', amount: 200 },
@@ -32,9 +29,6 @@ function generateBoard() {
   ];
 }
 
-//
-// チャンスカード
-//
 const chanceCards = [
   { type: "money", amount: 200, text: "銀行から200もらう" },
   { type: "money", amount: -100, text: "罰金100を払う" },
@@ -44,9 +38,6 @@ const chanceCards = [
   { type: "goto", pos: 12, text: "刑務所へ行く" },
 ];
 
-//
-// コミュニティカード
-//
 const communityCards = [
   { type: "money", amount: 100, text: "銀行から100もらう" },
   { type: "money", amount: -50, text: "医療費として50払う" },
@@ -56,62 +47,10 @@ const communityCards = [
   { type: "goto", pos: 12, text: "刑務所へ行く" },
 ];
 
-//
-// 色グループ判定
-//
 function hasFullColorSet(player, board, color) {
   const tiles = board.filter(t => t.type === 'property' && t.color === color);
   return tiles.every(t => t.owner === player.id);
 }
-
-//
-// チャンスカード処理
-//
-function drawChance(player, room) {
-  const card = chanceCards[Math.floor(Math.random() * chanceCards.length)];
-
-  if (card.type === "money") player.money += card.amount;
-
-  if (card.type === "move") {
-    player.pos = (player.pos + card.steps + room.board.length) % room.board.length;
-  }
-
-  if (card.type === "goto") {
-    player.pos = card.pos;
-    if (card.pos === 0) player.money += 200;
-    if (card.pos === 12) {
-      player.jail = true;
-      player.jailTurn = 0;
-    }
-  }
-
-  return "チャンスカード: " + card.text;
-}
-
-//
-// コミュニティカード処理
-//
-function drawCommunity(player, room) {
-  const card = communityCards[Math.floor(Math.random() * communityCards.length)];
-
-  if (card.type === "money") player.money += card.amount;
-
-  if (card.type === "move") {
-    player.pos = (player.pos + card.steps + room.board.length) % room.board.length;
-  }
-
-  if (card.type === "goto") {
-    player.pos = card.pos;
-    if (card.pos === 0) player.money += 200;
-    if (card.pos === 12) {
-      player.jail = true;
-      player.jailTurn = 0;
-    }
-  }
-
-  return "コミュニティカード: " + card.text;
-}
-
 //
 // ルームデータ
 //
@@ -128,7 +67,8 @@ io.on('connection', (socket) => {
         players: [],
         turn: 0,
         board: generateBoard(),
-        lastMessage: "ゲーム開始！"
+        lastMessage: "ゲーム開始！",
+        waitingForChoice: null
       };
     }
 
@@ -147,35 +87,48 @@ io.on('connection', (socket) => {
   });
 
   //
-  // 家を建てる
+  // 物件に止まったときの選択肢（購入 / 建設 / スルー）
   //
-  socket.on('buildHouse', (roomId, tileIndex) => {
+  socket.on("propertyChoice", (roomId, choice) => {
     const room = rooms[roomId];
-    const player = room.players.find(p => p.id === socket.id);
-    const tile = room.board[tileIndex];
+    const wait = room.waitingForChoice;
+    if (!wait) return;
 
-    if (!tile || tile.type !== 'property') return;
-    if (tile.owner !== player.id) return;
-    if (!hasFullColorSet(player, room.board, tile.color)) return;
+    const player = room.players.find(p => p.id === wait.playerId);
+    const tile = room.board[wait.tileIndex];
 
-    if (tile.hotel) return;
-
-    if (tile.house === 4) {
-      if (player.money >= tile.housePrice) {
-        player.money -= tile.housePrice;
-        tile.house = 0;
-        tile.hotel = true;
-        room.lastMessage = `${tile.name} にホテルを建設！`;
-      }
-    } else {
-      if (player.money >= tile.housePrice) {
-        player.money -= tile.housePrice;
-        tile.house++;
-        room.lastMessage = `${tile.name} に家を建設！（${tile.house}軒）`;
+    if (choice === "buy") {
+      if (player.money >= tile.price) {
+        tile.owner = player.id;
+        player.money -= tile.price;
+        player.properties.push(tile.name);
+        room.lastMessage = `${player.name} が ${tile.name} を購入しました！`;
+      } else {
+        room.lastMessage = `${player.name} はお金が足りません。`;
       }
     }
 
-    io.to(roomId).emit('stateUpdate', room);
+    if (choice === "build") {
+      if (hasFullColorSet(player, room.board, tile.color)) {
+        if (player.money >= tile.housePrice) {
+          tile.house++;
+          player.money -= tile.housePrice;
+          room.lastMessage = `${tile.name} に家を建てました！`;
+        } else {
+          room.lastMessage = `お金が足りません。`;
+        }
+      } else {
+        room.lastMessage = `色グループを揃えていないので建設できません。`;
+      }
+    }
+
+    if (choice === "skip") {
+      tile.price = Math.floor(tile.price * 1.2); // 20%値上げ
+      room.lastMessage = `${tile.name} の価格が上昇しました（${tile.price}）`;
+    }
+
+    room.waitingForChoice = null;
+    io.to(roomId).emit("stateUpdate", room);
   });
 
   //
@@ -262,13 +215,15 @@ function handleTile(player, tile, room) {
   if (tile.type === "property") {
 
     if (!tile.owner) {
-      if (player.money >= tile.price) {
-        tile.owner = player.id;
-        player.money -= tile.price;
-        player.properties.push(tile.name);
-        room.lastMessage = `${player.name} が ${tile.name} を購入！`;
-      }
-    } else if (tile.owner !== player.id) {
+      room.waitingForChoice = {
+        playerId: player.id,
+        tileIndex: player.pos
+      };
+      room.lastMessage = `${player.name} は ${tile.name} に止まりました。購入しますか？`;
+      return;
+    }
+
+    if (tile.owner !== player.id) {
       let fee = tile.fee;
 
       const owner = room.players.find(p => p.id === tile.owner);
