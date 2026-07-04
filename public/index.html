@@ -1,54 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <title>正然のモノポリー風ゲーム</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h2 class="title">🎲 オンラインモノポリー風ゲーム</h2>
-
-<div class="panel join-box">
-  <h3>ルームに参加</h3>
+<div class="join-box panel">
+  <h3>ルーム参加</h3>
   <input id="room" placeholder="ルームID">
   <input id="name" placeholder="名前">
   <button onclick="joinGame()">参加</button>
 </div>
 
-<div class="panel control-box">
-  <button onclick="rollDice()">🎲 サイコロを振る</button>
-</div>
-
-<!-- 3Dサイコロ表示 -->
-<div class="panel dice-box">
+<div class="panel">
   <h3>🎲 サイコロ</h3>
-
-  <div class="dice" id="dice">
-    <div class="face one">1</div>
-    <div class="face two">2</div>
-    <div class="face three">3</div>
-    <div class="face four">4</div>
-    <div class="face five">5</div>
-    <div class="face six">6</div>
-  </div>
-
-  <div id="dice-result" class="dice-result">まだ振られていません</div>
-
-  <!-- サイコロ音 -->
-  <audio id="dice-sound" src="sound/dice.mp3"></audio>
+  <div id="dice" class="dice"></div>
+  <div id="dice-result"></div>
+  <audio id="dice-sound" src="dice.mp3"></audio>
+  <button onclick="rollDice()">サイコロを振る</button>
 </div>
 
 <div class="panel">
   <h3>📍 盤面</h3>
-  <div id="board"></div>
+  <div id="board" class="board-square"></div>
 </div>
 
 <div class="panel">
-  <h3>👤 プレイヤー</h3>
+  <h3>プレイヤー</h3>
   <div id="players"></div>
 </div>
 
+<div class="panel">
+  <h3>📢 メッセージ</h3>
+  <div id="message-box">まだメッセージはありません</div>
+</div>
+
+<div id="choice-box" class="panel"></div>
+
 <script src="/socket.io/socket.io.js"></script>
 <script src="client.js"></script>
+
 </body>
 </html>
