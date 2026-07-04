@@ -21,6 +21,8 @@ function generateBoard() {
 let rooms = {};
 
 io.on('connection', (socket) => {
+
+  // ルーム参加
   socket.on('joinRoom', (roomId, playerName) => {
     if (!rooms[roomId]) {
       rooms[roomId] = {
@@ -42,9 +44,13 @@ io.on('connection', (socket) => {
     io.to(roomId).emit('stateUpdate', rooms[roomId]);
   });
 
+  // サイコロを振る
   socket.on('rollDice', (roomId) => {
     const room = rooms[roomId];
     const dice = Math.floor(Math.random() * 6) + 1;
+
+    // ★ サイコロの出目を送る（音・3D回転・表示に必要）
+    io.to(roomId).emit("diceResult", dice);
 
     const player = room.players[room.turn];
     player.pos = (player.pos + dice) % room.board.length;
@@ -58,6 +64,7 @@ io.on('connection', (socket) => {
   });
 });
 
+// マスの処理
 function handleTile(player, tile) {
   if (tile.type === 'event') {
     if (tile.amount) player.money += tile.amount;
