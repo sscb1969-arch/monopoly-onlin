@@ -1,117 +1,30 @@
-body {
-  font-family: sans-serif;
-  background: #f0f0f0;
-  text-align: center;
-}
-
-/* 共通パネル */
-.panel {
+.side-panel {
+  position: fixed;
+  top: 20px;
+  width: 250px;
   background: #fff;
   padding: 10px;
-  margin: 10px auto;
-  width: 600px;
   border-radius: 10px;
   box-shadow: 0 0 5px #aaa;
+  text-align: left;
+  transition: width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
 }
 
-.join-box input {
-  margin: 5px;
-  padding: 5px;
-}
+.side-panel.left { left: 20px; }
+.side-panel.right { right: 20px; }
 
-button {
-  padding: 6px 12px;
-  margin: 5px;
-  cursor: pointer;
-}
-
-/* 正方形外周ボード */
-.board-square {
-  position: relative;
-  width: 500px;
-  height: 500px;
-  margin: 20px auto;
-  background: #e0e0e0;
-  border: 4px solid #333;
-  border-radius: 10px;
-}
-
-/* マス */
-.tile {
-  width: 80px;
-  height: 80px;
-  border: 2px solid #333;
-  border-radius: 6px;
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  text-align: center;
-  background: #fff;
-}
-
-/* GOマス */
-.tile.go {
-  background: #ffffff;
-  border-color: gold;
-  font-weight: bold;
-}
-
-/* 刑務所 */
-.tile.jail {
-  background: #000;
-  color: #fff;
-  font-weight: bold;
-}
-
-/* 家・ホテルアイコン */
-.house-icon {
-  position: absolute;
-  bottom: 2px;
-  right: 2px;
-  font-size: 14px;
-}
-
-.hotel-icon {
-  position: absolute;
-  bottom: 2px;
-  right: 2px;
-  font-size: 16px;
-  color: red;
-}
-
-/* 駒専用レイヤー */
-#player-layer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 500px;
-  height: 500px;
-  pointer-events: none;
-}
-
-/* プレイヤー駒（アニメーション付き） */
-.player-icon {
-  position: absolute;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  border: 2px solid #fff;
-  transition: transform 0.5s ease;
-}
-
-/* サイコロ */
-.dice-face {
-  display: inline-block;
-  width: 40px;
+.side-panel.collapsed {
+  width: 60px;
   height: 40px;
-  margin: 5px;
-  background: #fff;
-  border: 2px solid #333;
-  border-radius: 8px;
-  line-height: 40px;
-  font-size: 20px;
+  overflow: hidden;
+  opacity: 0.7;
+}
+
+.toggle-btn {
+  float: right;
+  font-size: 10px;
+  padding: 3px 6px;
+  margin-bottom: 5px;
 }
 
 /* サイコロアニメーション */
@@ -127,53 +40,12 @@ button {
   animation: dice-roll 0.5s ease;
 }
 
-/* プレイヤー中央表示 */
-.players-center {
+/* 駒アニメーション */
+.player-icon {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 220px;
-  transform: translate(-50%, -50%);
-  background: rgba(255,255,255,0.9);
-  padding: 10px;
-  border-radius: 10px;
-  box-shadow: 0 0 5px #aaa;
-}
-
-.player {
-  background: #fafafa;
-  padding: 5px;
-  margin: 5px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-
-/* サイドパネル（チャット・ルール） */
-.side-panel {
-  position: fixed;
-  top: 20px;
-  width: 250px;
-  background: #fff;
-  padding: 10px;
-  border-radius: 10px;
-  box-shadow: 0 0 5px #aaa;
-  text-align: left;
-}
-
-.side-panel.left {
-  left: 20px;
-}
-
-.side-panel.right {
-  right: 20px;
-}
-
-/* チャット欄 */
-.chat-box {
-  height: 300px;
-  overflow-y: auto;
-  background: #fafafa;
-  padding: 5px;
-  border: 1px solid #ccc;
-  margin-bottom: 5px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  transition: transform 0.5s ease;
 }
