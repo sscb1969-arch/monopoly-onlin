@@ -5,14 +5,8 @@ const io = require('socket.io')(http);
 
 app.use(express.static('public'));
 
-//
-// プレイヤーカラー（駒専用色）
-//
 const playerColors = ["#ff4444", "#44aaff", "#44dd44", "#ffaa44", "#cc44ff", "#00cccc"];
 
-//
-// 盤面生成（20マス）
-//
 function generateBoard() {
   return [
     { type: 'start', name: 'GO', amount: 200 },
@@ -41,9 +35,6 @@ function generateBoard() {
   ];
 }
 
-//
-// カード
-//
 const chanceCards = [
   { type: "money", amount: 200, text: "銀行から200もらう" },
   { type: "money", amount: -100, text: "罰金100を払う" },
@@ -67,16 +58,10 @@ function hasFullColorSet(player, board, color) {
   return tiles.every(t => t.owner === player.id);
 }
 
-//
-// ルームデータ
-//
 let rooms = {};
 
 io.on('connection', (socket) => {
 
-  //
-  // ルーム参加
-  //
   socket.on('joinRoom', (roomId, playerName) => {
     if (!rooms[roomId]) {
       rooms[roomId] = {
@@ -103,9 +88,6 @@ io.on('connection', (socket) => {
     io.to(roomId).emit('stateUpdate', rooms[roomId]);
   });
 
-  //
-  // 物件選択
-  //
   socket.on("propertyChoice", (roomId, choice) => {
     const room = rooms[roomId];
     const wait = room?.waitingForChoice;
@@ -148,9 +130,6 @@ io.on('connection', (socket) => {
     io.to(roomId).emit("stateUpdate", room);
   });
 
-  //
-  // サイコロ
-  //
   socket.on('rollDice', (roomId) => {
     const room = rooms[roomId];
     if (!room) return;
@@ -158,15 +137,12 @@ io.on('connection', (socket) => {
     const player = room.players[room.turn];
 
     const dice1 = Math.floor(Math.random() * 6) + 1;
-    const dice2 = Math.floor(Math.random() * 6) + 1;
-    const total = dice1 + dice2;
-
-    io.to(roomId).emit("diceResult", { dice1, dice2, total });
+    io.to(roomId).emit("diceResult", { dice1, total: dice1 });
 
     const oldPos = player.pos;
-    player.pos = (player.pos + total) % room.board.length;
+    player.pos = (player.pos + dice1) % room.board.length;
 
-    if (oldPos + total >= room.board.length) {
+    if (oldPos + dice1 >= room.board.length) {
       player.money += 200;
       room.lastMessage = `${player.name} はGOを通過して +200！`;
     }
@@ -178,9 +154,6 @@ io.on('connection', (socket) => {
     io.to(roomId).emit('stateUpdate', room);
   });
 
-  //
-  // チャット
-  //
   socket.on("chatMessage", (roomId, msg) => {
     const room = rooms[roomId];
     if (!room) return;
@@ -194,9 +167,6 @@ io.on('connection', (socket) => {
 
 });
 
-//
-// マス処理
-//
 function handleTile(player, tile, room) {
 
   if (tile.type === "chance") {
@@ -247,20 +217,11 @@ function handleTile(player, tile, room) {
   }
 }
 
-//
-// チャンス
-//
 function drawChance(player, room) {
   const card = chanceCards[Math.floor(Math.random() * chanceCards.length)];
 
-  if (card.type === "money") {
-    player.money += card.amount;
-  }
-
-  if (card.type === "move") {
-    player.pos = (player.pos + card.steps + room.board.length) % room.board.length;
-  }
-
+  if (card.type === "money") player.money += card.amount;
+  if (card.type === "move") player.pos = (player.pos + card.steps + room.board.length) % room.board.length;
   if (card.type === "goto") {
     player.pos = card.pos;
     if (card.pos === 0) player.money += 200;
@@ -269,20 +230,11 @@ function drawChance(player, room) {
   return card.text;
 }
 
-//
-// コミュニティ
-//
 function drawCommunity(player, room) {
   const card = communityCards[Math.floor(Math.random() * communityCards.length)];
 
-  if (card.type === "money") {
-    player.money += card.amount;
-  }
-
-  if (card.type === "move") {
-    player.pos = (player.pos + card.steps + room.board.length) % room.board.length;
-  }
-
+  if (card.type === "money") player.money += card.amount;
+  if (card.type === "move") player.pos = (player.pos + card.steps + room.board.length) % room.board.length;
   if (card.type === "goto") {
     player.pos = card.pos;
     if (card.pos === 0) player.money += 200;
