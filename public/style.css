@@ -1,41 +1,33 @@
-/* サイドパネル（チャット・ルール） */
-.side-panel {
-  position: fixed;
-  top: 20px;
-  width: 120px;           /* ★ 初期幅を縮小 */
-  background: #fff;
-  padding: 8px;
-  border-radius: 10px;
-  box-shadow: 0 0 5px #aaa;
-  text-align: left;
-  transition: width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
-  z-index: 10;
+body {
+  font-family: sans-serif;
+  background: #f0f0f0;
+  text-align: center;
 }
 
-.side-panel.left { left: 10px; }
-.side-panel.right { right: 10px; }
+.panel {
+  background: #fff;
+  padding: 10px;
+  margin: 10px auto;
+  width: 600px;
+  border-radius: 10px;
+  box-shadow: 0 0 5px #aaa;
+}
 
-/* 折りたたみ時 */
-.side-panel.collapsed {
-  width: 40px;            /* ★ ほぼボタンだけにする */
-  height: 40px;
-  overflow: hidden;
-  opacity: 0.8;
+.join-box input {
+  margin: 5px;
   padding: 5px;
 }
 
-/* 折りたたみボタン */
-.toggle-btn {
-  float: right;
-  font-size: 10px;
-  padding: 3px 6px;
-  margin-bottom: 5px;
+button {
+  padding: 6px 12px;
+  margin: 5px;
+  cursor: pointer;
 }
 
-/* 盤面サイズを縮小（重なり防止） */
+/* 盤面サイズ（460px） */
 .board-square {
   position: relative;
-  width: 460px;           /* ★ 500 → 460 に縮小 */
+  width: 460px;
   height: 460px;
   margin: 20px auto;
   background: #e0e0e0;
@@ -43,7 +35,32 @@
   border-radius: 10px;
 }
 
-/* 駒アニメーション */
+/* マス */
+.tile {
+  width: 70px;
+  height: 70px;
+  border: 2px solid #333;
+  border-radius: 6px;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  text-align: center;
+  background: #fff;
+}
+
+/* 駒レイヤー */
+#player-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 460px;
+  height: 460px;
+  pointer-events: none;
+}
+
+/* 駒（アニメーション） */
 .player-icon {
   position: absolute;
   width: 18px;
@@ -64,4 +81,67 @@
 
 .dice-face.animate {
   animation: dice-roll 0.5s ease;
+}
+
+/* プレイヤー中央表示 */
+.players-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 220px;
+  transform: translate(-50%, -50%);
+  background: rgba(255,255,255,0.9);
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 0 5px #aaa;
+}
+
+.player {
+  background: #fafafa;
+  padding: 5px;
+  margin: 5px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* サイドパネル（チャット・ルール） */
+.side-panel {
+  position: fixed;
+  top: 20px;
+  width: 120px;
+  background: #fff;
+  padding: 8px;
+  border-radius: 10px;
+  box-shadow: 0 0 5px #aaa;
+  text-align: left;
+  transition: width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+  z-index: 10;
+}
+
+.side-panel.left { left: 10px; }
+.side-panel.right { right: 10px; }
+
+.side-panel.collapsed {
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  opacity: 0.8;
+  padding: 5px;
+}
+
+.toggle-btn {
+  float: right;
+  font-size: 10px;
+  padding: 3px 6px;
+  margin-bottom: 5px;
+}
+
+/* チャット欄 */
+.chat-box {
+  height: 300px;
+  overflow-y: auto;
+  background: #fafafa;
+  padding: 5px;
+  border: 1px solid #ccc;
+  margin-bottom: 5px;
 }
