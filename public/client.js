@@ -1,4 +1,5 @@
 const socket = io();
+let myId = null;
 
 function joinGame() {
   const roomId = document.getElementById('room').value;
@@ -6,9 +7,26 @@ function joinGame() {
   socket.emit('joinRoom', roomId, name);
 }
 
+// 自分のIDを取得
+socket.on('connect', () => {
+  myId = socket.id;
+});
+
 socket.on('stateUpdate', (state) => {
   renderBoard(state.board);
   renderPlayers(state.players, state.turn);
+
+  // ★ 手番チェック：自分の番ならボタンを有効化
+  const currentPlayer = state.players[state.turn];
+  const diceBtn = document.querySelector("button[onclick='rollDice()']");
+
+  if (currentPlayer.id === myId) {
+    diceBtn.disabled = false;
+    diceBtn.style.opacity = "1";
+  } else {
+    diceBtn.disabled = true;
+    diceBtn.style.opacity = "0.5";
+  }
 });
 
 function rollDice() {
@@ -24,7 +42,6 @@ function renderBoard(board) {
     const div = document.createElement('div');
     div.className = 'tile';
 
-    // 種類ごとに色分け
     if (tile.type === 'property') div.style.background = '#ffeaa7';
     if (tile.type === 'event') div.style.background = '#fab1a0';
     if (tile.type === 'start') div.style.background = '#81ecec';
