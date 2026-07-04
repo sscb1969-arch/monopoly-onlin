@@ -5,7 +5,6 @@ body {
   color: #fff;
 }
 
-/* タイトル */
 .title {
   font-size: 32px;
   text-align: center;
@@ -14,7 +13,6 @@ body {
   margin-bottom: 20px;
 }
 
-/* パネル（カードUI） */
 .panel {
   background: rgba(0,0,0,0.25);
   border-radius: 16px;
@@ -23,7 +21,6 @@ body {
   box-shadow: 0 6px 12px rgba(0,0,0,0.25);
 }
 
-/* 入力欄 */
 input {
   font-size: 18px;
   padding: 10px;
@@ -33,7 +30,6 @@ input {
   width: 45%;
 }
 
-/* ボタン（ゲームボタン風） */
 button {
   font-size: 20px;
   padding: 12px 20px;
@@ -49,7 +45,7 @@ button:active {
   transform: scale(0.95);
 }
 
-/* 盤面（カードグリッド） */
+/* 盤面 */
 #board {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -70,7 +66,7 @@ button:active {
   transform: scale(1.05);
 }
 
-/* プレイヤーカード */
+/* プレイヤー */
 .player {
   background: rgba(255,255,255,0.9);
   border-radius: 12px;
@@ -78,4 +74,43 @@ button:active {
   margin-bottom: 10px;
   color: #333;
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* 3Dサイコロ */
+.dice {
+  width: 80px;
+  height: 80px;
+  position: relative;
+  margin: 20px auto;
+  transform-style: preserve-3d;
+  transition: transform 1s;
+}
+
+.face {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background: white;
+  border-radius: 10px;
+  font-size: 32px;
+  font-weight: bold;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.one   { transform: rotateY(0deg) translateZ(40px); }
+.two   { transform: rotateY(90deg) translateZ(40px); }
+.three { transform: rotateY(180deg) translateZ(40px); }
+.four  { transform: rotateY(270deg) translateZ(40px); }
+.five  { transform: rotateX(90deg) translateZ(40px); }
+.six   { transform: rotateX(-90deg) translateZ(40px); }
+
+.dice-result {
+  font-size: 28px;
+  text-align: center;
+  margin-top: 10px;
+  font-weight: 900;
 }
