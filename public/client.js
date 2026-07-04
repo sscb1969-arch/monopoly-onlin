@@ -23,7 +23,13 @@ function renderBoard(board) {
   board.forEach((tile, i) => {
     const div = document.createElement('div');
     div.className = 'tile';
-    div.innerHTML = `${i}: ${tile.name}`;
+
+    // 種類ごとに色分け
+    if (tile.type === 'property') div.style.background = '#ffeaa7';
+    if (tile.type === 'event') div.style.background = '#fab1a0';
+    if (tile.type === 'start') div.style.background = '#81ecec';
+
+    div.innerHTML = `${i}<br>${tile.name}`;
     boardDiv.appendChild(div);
   });
 }
