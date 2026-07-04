@@ -5,11 +5,16 @@ function joinGame() {
   const roomId = document.getElementById("room").value;
   const name = document.getElementById("name").value;
 
+  if (!roomId || !name) {
+    alert("ルームIDと名前を入力してください");
+    return;
+  }
+
   socket.emit("joinRoom", roomId, name);
   document.querySelector(".join-box").style.display = "none";
 }
 
-// サイコロを振る（1つに変更）
+// サイコロ（1つ）
 function rollDice() {
   const roomId = document.getElementById("room").value;
   socket.emit("rollDice", roomId);
@@ -25,8 +30,8 @@ function sendChat() {
   document.getElementById("chat-input").value = "";
 }
 
-// サイコロ結果（1つ＋アニメーション）
-socket.on("diceResult", ({ dice1, total }) => {
+// サイコロ結果
+socket.on("diceResult", ({ dice1 }) => {
   const diceBox = document.getElementById("dice");
   const resultText = document.getElementById("dice-result");
   const diceSound = document.getElementById("dice-sound");
@@ -41,15 +46,14 @@ socket.on("diceResult", ({ dice1, total }) => {
   `;
 });
 
-// stateUpdate（ターン制限＋盤面更新）
+// stateUpdate
 socket.on("stateUpdate", (state) => {
   window.latestPlayers = state.players;
 
   renderBoard(state.board);
   renderPlayerIcons(state.board);
 
-  const msgBox = document.getElementById("message-box");
-  msgBox.innerText = state.lastMessage || "";
+  document.getElementById("message-box").innerText = state.lastMessage || "";
 
   const rollBtn = document.getElementById("roll-button");
   rollBtn.disabled = state.players[state.turn].id !== socket.id;
@@ -66,13 +70,13 @@ socket.on("chatMessage", (msg) => {
   box.scrollTop = box.scrollHeight;
 });
 
-// 盤面描画（変更なし）
+// 盤面描画（460px対応）
 function renderBoard(board) {
   const boardDiv = document.getElementById("board");
   boardDiv.innerHTML = "";
 
-  const size = 500;
-  const tileSize = 80;
+  const size = 460;
+  const tileSize = 70;
 
   board.forEach((tile, index) => {
     const div = document.createElement("div");
@@ -110,14 +114,14 @@ function renderBoard(board) {
   });
 }
 
-// 駒描画（アニメーション）
+// 駒描画（460px対応）
 function renderPlayerIcons(board) {
   const players = window.latestPlayers || [];
   const layer = document.getElementById("player-layer");
   layer.innerHTML = "";
 
-  const tileSize = 70;   // ★ 修正
-  const size = 460;      // ★ 修正
+  const tileSize = 70;
+  const size = 460;
 
   players.forEach((p) => {
     const icon = document.createElement("div");
@@ -141,13 +145,13 @@ function renderPlayerIcons(board) {
       y = size - tileSize - (index - 15) * tileSize;
     }
 
-    icon.style.transform = `translate(${x + 25}px, ${y + 25}px)`; // ★ 修正
+    icon.style.transform = `translate(${x + 25}px, ${y + 25}px)`;
 
     layer.appendChild(icon);
   });
 }
 
-// 色グループの色
+// 色
 function getColor(color) {
   const colors = {
     brown: "#8B4513",
@@ -162,7 +166,7 @@ function getColor(color) {
   return colors[color] || "#ccc";
 }
 
-// プレイヤー情報表示
+// プレイヤー情報
 function renderPlayers(players, turn) {
   const playersDiv = document.getElementById("players-center");
   playersDiv.innerHTML = "";
