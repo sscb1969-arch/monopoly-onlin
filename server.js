@@ -6,6 +6,11 @@ const io = require('socket.io')(http);
 app.use(express.static('public'));
 
 //
+// プレイヤーカラー
+//
+const playerColors = ["red", "blue", "green", "yellow", "purple", "orange"];
+
+//
 // 盤面生成（20マス）
 //
 function generateBoard() {
@@ -94,7 +99,8 @@ io.on('connection', (socket) => {
       money: 1000,
       properties: [],
       jail: false,
-      jailTurn: 0
+      jailTurn: 0,
+      color: playerColors[rooms[roomId].players.length % playerColors.length]
     });
 
     socket.join(roomId);
@@ -106,8 +112,8 @@ io.on('connection', (socket) => {
   //
   socket.on("propertyChoice", (roomId, choice) => {
     const room = rooms[roomId];
-    const wait = room.waitingForChoice;
-    if (!wait) return;
+    const wait = room?.waitingForChoice;
+    if (!room || !wait) return;
 
     const player = room.players.find(p => p.id === wait.playerId);
     const tile = room.board[wait.tileIndex];
@@ -151,6 +157,8 @@ io.on('connection', (socket) => {
   //
   socket.on('rollDice', (roomId) => {
     const room = rooms[roomId];
+    if (!room) return;
+
     const player = room.players[room.turn];
 
     const dice1 = Math.floor(Math.random() * 6) + 1;
@@ -172,6 +180,20 @@ io.on('connection', (socket) => {
 
     room.turn = (room.turn + 1) % room.players.length;
     io.to(roomId).emit('stateUpdate', room);
+  });
+
+  //
+  // チャット
+  //
+  socket.on("chatMessage", (roomId, msg) => {
+    const room = rooms[roomId];
+    if (!room) return;
+
+    io.to(roomId).emit("chatMessage", {
+      playerId: socket.id,
+      name: room.players.find(p => p.id === socket.id)?.name || "不明",
+      text: msg
+    });
   });
 
 });
