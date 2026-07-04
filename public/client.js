@@ -116,8 +116,8 @@ function renderPlayerIcons(board) {
   const layer = document.getElementById("player-layer");
   layer.innerHTML = "";
 
-  const tileSize = 80;
-  const size = 500;
+  const tileSize = 70;   // ★ 修正
+  const size = 460;      // ★ 修正
 
   players.forEach((p) => {
     const icon = document.createElement("div");
@@ -141,7 +141,7 @@ function renderPlayerIcons(board) {
       y = size - tileSize - (index - 15) * tileSize;
     }
 
-    icon.style.transform = `translate(${x + 30}px, ${y + 30}px)`;
+    icon.style.transform = `translate(${x + 25}px, ${y + 25}px)`; // ★ 修正
 
     layer.appendChild(icon);
   });
