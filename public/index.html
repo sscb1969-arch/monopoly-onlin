@@ -40,7 +40,7 @@
 
 <!-- 左チャット（縮小可能） -->
 <div id="chat-panel" class="side-panel left">
-  <button class="toggle-btn" onclick="togglePanel('chat-panel')">縮小</button>
+  <button class="toggle-btn" onclick="togglePanel('chat-panel')">◀</button>
   <h3>💬 チャット</h3>
   <div id="chat-box" class="chat-box"></div>
   <input id="chat-input" placeholder="メッセージ">
@@ -49,7 +49,7 @@
 
 <!-- 右ルール（縮小可能） -->
 <div id="rules-panel" class="side-panel right">
-  <button class="toggle-btn" onclick="togglePanel('rules-panel')">縮小</button>
+  <button class="toggle-btn" onclick="togglePanel('rules-panel')">▶</button>
   <h3>📘 ルール</h3>
   <ul>
     <li>GOを通過すると +200</li>
@@ -67,8 +67,3 @@ function togglePanel(id) {
 }
 </script>
 
-<script src="/socket.io/socket.io.js"></script>
-<script src="client.js"></script>
-
-</body>
-</html>
