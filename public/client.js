@@ -22,7 +22,7 @@ function chooseProperty(choice) {
   socket.emit("propertyChoice", roomId, choice);
 }
 
-// タイル上の建設ボタン用（簡易ラッパー）
+// タイル上の建設ボタン用
 function buildHouse(index) {
   chooseProperty("build");
 }
@@ -37,7 +37,7 @@ function sendChat() {
   document.getElementById("chat-input").value = "";
 }
 
-// サイコロ結果（2つ）
+// サイコロ結果（アニメーション付き）
 socket.on("diceResult", ({ dice1, dice2, total }) => {
   const diceBox = document.getElementById("dice");
   const resultText = document.getElementById("dice-result");
@@ -49,8 +49,8 @@ socket.on("diceResult", ({ dice1, dice2, total }) => {
   resultText.innerText = `🎲 ${dice1} + ${dice2} = ${total}`;
 
   diceBox.innerHTML = `
-    <div class="dice-face">🎲${dice1}</div>
-    <div class="dice-face">🎲${dice2}</div>
+    <div class="dice-face animate">🎲${dice1}</div>
+    <div class="dice-face animate">🎲${dice2}</div>
   `;
 });
 
@@ -59,7 +59,7 @@ socket.on("stateUpdate", (state) => {
   window.latestPlayers = state.players;
 
   renderBoard(state.board);
-  renderPlayers(state.players, state.turn);
+  renderPlayerIcons(state.board);
 
   const msgBox = document.getElementById("message-box");
   msgBox.innerText = state.lastMessage || "";
@@ -82,6 +82,8 @@ socket.on("stateUpdate", (state) => {
   } else {
     rollBtn.disabled = true;
   }
+
+  renderPlayers(state.players, state.turn);
 });
 
 // チャット受信
@@ -166,23 +168,42 @@ function renderBoard(board) {
 
     boardDiv.appendChild(div);
   });
-
-  renderPlayerIcons(board);
 }
 
-// プレイヤーアイコン表示（マス上）
+// プレイヤーアイコン（アニメーション付き）
 function renderPlayerIcons(board) {
   const players = window.latestPlayers || [];
-  const tiles = document.querySelectorAll("#board .tile");
+  const layer = document.getElementById("player-layer");
+  layer.innerHTML = "";
+
+  const tileSize = 80;
+  const size = 500;
 
   players.forEach((p) => {
-    const tile = tiles[p.pos];
-    if (!tile) return;
-
     const icon = document.createElement("div");
     icon.className = "player-icon";
-    icon.style.background = p.color; // プレイヤーごとに色
-    tile.appendChild(icon);
+    icon.style.background = p.color;
+
+    let x = 0, y = 0;
+    const index = p.pos;
+
+    if (index < 6) {
+      x = index * tileSize;
+      y = 0;
+    } else if (index < 11) {
+      x = size - tileSize;
+      y = (index - 5) * tileSize;
+    } else if (index < 16) {
+      x = size - tileSize - (index - 10) * tileSize;
+      y = size - tileSize;
+    } else {
+      x = 0;
+      y = size - tileSize - (index - 15) * tileSize;
+    }
+
+    icon.style.transform = `translate(${x + 30}px, ${y + 30}px)`;
+
+    layer.appendChild(icon);
   });
 }
 
