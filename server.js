@@ -4,30 +4,38 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 
 app.use(express.static('public'));
-
 function generateBoard() {
   return [
-    { type: 'start', name: 'GO', amount: 200 },
+    // 上辺（0〜5）
+    { type: 'start', name: 'GO', amount: 200 }, // 0
+    { type: 'property', name: '茶色1', color: 'brown', price: 60, fee: 20, house: 0, hotel: false, housePrice: 50 }, // 1
+    { type: 'property', name: '水色1', color: 'lightblue', price: 100, fee: 30, house: 0, hotel: false, housePrice: 50 }, // 2
+    { type: 'chance', name: 'チャンス' }, // 3
+    { type: 'property', name: 'ピンク1', color: 'pink', price: 140, fee: 50, house: 0, hotel: false, housePrice: 100 }, // 4
+    { type: 'property', name: '赤1', color: 'red', price: 220, fee: 90, house: 0, hotel: false, housePrice: 150 }, // 5
 
-    { type: 'property', name: '茶色1', color: 'brown', price: 60, fee: 20, house: 0, hotel: false, housePrice: 50 },
-    { type: 'property', name: '茶色2', color: 'brown', price: 60, fee: 20, house: 0, hotel: false, housePrice: 50 },
+    // 右辺（6〜10）
+    { type: 'property', name: '茶色2', color: 'brown', price: 60, fee: 20, house: 0, hotel: false, housePrice: 50 }, // 6
+    { type: 'community', name: 'コミュニティ' }, // 7
+    { type: 'property', name: '水色2', color: 'lightblue', price: 100, fee: 30, house: 0, hotel: false, housePrice: 50 }, // 8
+    { type: 'property', name: 'ピンク2', color: 'pink', price: 140, fee: 50, house: 0, hotel: false, housePrice: 100 }, // 9
+    { type: 'property', name: '赤2', color: 'red', price: 220, fee: 90, house: 0, hotel: false, housePrice: 150 }, // 10
 
-    { type: 'chance', name: 'チャンス' },
+    // 下辺（11〜15）
+    { type: 'jail', name: '刑務所' }, // 11
+    { type: 'property', name: 'オレンジ1', color: 'orange', price: 180, fee: 70, house: 0, hotel: false, housePrice: 100 }, // 12
+    { type: 'property', name: '水色3', color: 'lightblue', price: 120, fee: 40, house: 0, hotel: false, housePrice: 50 }, // 13
+    { type: 'property', name: 'ピンク3', color: 'pink', price: 160, fee: 60, house: 0, hotel: false, housePrice: 100 }, // 14
+    { type: 'chance', name: 'チャンス' }, // 15
 
-    { type: 'property', name: '水色1', color: 'lightblue', price: 100, fee: 30, house: 0, hotel: false, housePrice: 50 },
-    { type: 'property', name: '水色2', color: 'lightblue', price: 100, fee: 30, house: 0, hotel: false, housePrice: 50 },
-    { type: 'property', name: '水色3', color: 'lightblue', price: 120, fee: 40, house: 0, hotel: false, housePrice: 50 },
-
-    { type: 'community', name: 'コミュニティ' },
-
-    { type: 'property', name: 'ピンク1', color: 'pink', price: 140, fee: 50, house: 0, hotel: false, housePrice: 100 },
-    { type: 'property', name: 'ピンク2', color: 'pink', price: 140, fee: 50, house: 0, hotel: false, housePrice: 100 },
-    { type: 'property', name: 'ピンク3', color: 'pink', price: 160, fee: 60, house: 0, hotel: false, housePrice: 100 },
-
-    { type: 'gotojail', name: '刑務所へ行け' },
-    { type: 'jail', name: '刑務所' },
+    // 左辺（16〜19）
+    { type: 'property', name: '赤3', color: 'red', price: 240, fee: 100, house: 0, hotel: false, housePrice: 150 }, // 16
+    { type: 'property', name: 'オレンジ2', color: 'orange', price: 180, fee: 70, house: 0, hotel: false, housePrice: 100 }, // 17
+    { type: 'property', name: 'オレンジ3', color: 'orange', price: 200, fee: 80, house: 0, hotel: false, housePrice: 100 }, // 18
+    { type: 'community', name: 'コミュニティ' }, // 19
   ];
 }
+
 
 const chanceCards = [
   { type: "money", amount: 200, text: "銀行から200もらう" },
