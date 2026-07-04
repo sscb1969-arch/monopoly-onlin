@@ -1,22 +1,20 @@
 const socket = io();
 let myId = null;
 
+socket.on("connect", () => {
+  myId = socket.id;
+});
+
 function joinGame() {
   const roomId = document.getElementById('room').value;
   const name = document.getElementById('name').value;
   socket.emit('joinRoom', roomId, name);
 }
 
-// 自分のIDを取得
-socket.on('connect', () => {
-  myId = socket.id;
-});
-
 socket.on('stateUpdate', (state) => {
   renderBoard(state.board);
   renderPlayers(state.players, state.turn);
 
-  // ★ 手番チェック：自分の番ならボタンを有効化
   const currentPlayer = state.players[state.turn];
   const diceBtn = document.querySelector("button[onclick='rollDice()']");
 
@@ -33,6 +31,29 @@ function rollDice() {
   const roomId = document.getElementById('room').value;
   socket.emit('rollDice', roomId);
 }
+
+/* ★ サイコロの3D回転＋音＋出目表示 */
+socket.on("diceResult", (dice) => {
+  const diceBox = document.getElementById("dice");
+  const resultText = document.getElementById("dice-result");
+  const diceSound = document.getElementById("dice-sound");
+
+  diceSound.currentTime = 0;
+  diceSound.play();
+
+  resultText.innerText = `🎲 ${dice}`;
+
+  const rotations = {
+    1: "rotateX(0deg) rotateY(0deg)",
+    2: "rotateY(-90deg)",
+    3: "rotateY(180deg)",
+    4: "rotateY(90deg)",
+    5: "rotateX(-90deg)",
+    6: "rotateX(90deg)"
+  };
+
+  diceBox.style.transform = rotations[dice];
+});
 
 function renderBoard(board) {
   const boardDiv = document.getElementById('board');
