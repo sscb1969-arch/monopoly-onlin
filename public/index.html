@@ -19,7 +19,7 @@
   <div id="dice" class="dice"></div>
   <div id="dice-result"></div>
   <audio id="dice-sound" src="dice.mp3"></audio>
-  <button onclick="rollDice()">サイコロを振る</button>
+  <button id="roll-button" onclick="rollDice()">サイコロを振る</button>
 </div>
 
 <div class="panel">
@@ -36,6 +36,27 @@
 </div>
 
 <div id="choice-box" class="panel"></div>
+
+<!-- 左側チャット -->
+<div id="chat-panel" class="side-panel left">
+  <h3>💬 チャット</h3>
+  <div id="chat-box" class="chat-box"></div>
+  <input id="chat-input" placeholder="メッセージ">
+  <button onclick="sendChat()">送信</button>
+</div>
+
+<!-- 右側ルール一覧 -->
+<div id="rules-panel" class="side-panel right">
+  <h3>📘 ルール</h3>
+  <ul>
+    <li>GOを通過すると +200</li>
+    <li>他人の物件に止まると家賃を支払う</li>
+    <li>同色コンプリートで家賃2倍</li>
+    <li>家を建てると家賃アップ</li>
+    <li>チャンス・コミュニティでイベント発生</li>
+    <li>刑務所はイベントマス扱い</li>
+  </ul>
+</div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="client.js"></script>
