@@ -87,7 +87,6 @@ button {
   left: 2px;
   width: 14px;
   height: 14px;
-  background: orange;
   border-radius: 50%;
 }
 
@@ -123,4 +122,33 @@ button {
   margin: 5px;
   border-radius: 6px;
   border: 1px solid #ccc;
+}
+
+/* サイドパネル（チャット・ルール） */
+.side-panel {
+  position: fixed;
+  top: 20px;
+  width: 250px;
+  background: #fff;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 0 5px #aaa;
+  text-align: left;
+}
+
+.side-panel.left {
+  left: 20px;
+}
+
+.side-panel.right {
+  right: 20px;
+}
+
+.chat-box {
+  height: 300px;
+  overflow-y: auto;
+  background: #fafafa;
+  padding: 5px;
+  border: 1px solid #ccc;
+  margin-bottom: 5px;
 }
