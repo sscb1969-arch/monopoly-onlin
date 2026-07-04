@@ -7,16 +7,39 @@ app.use(express.static('public'));
 
 function generateBoard() {
   return [
-    { type: 'start', name: 'スタート' },
-    { type: 'property', name: '公園', price: 100, fee: 20 },
-    { type: 'event', name: 'ラッキー！ +100', amount: 100 },
-    { type: 'property', name: '図書館', price: 120, fee: 30 },
-    { type: 'event', name: 'アンラッキー… -50', amount: -50 },
-    { type: 'property', name: '体育館', price: 150, fee: 40 },
-    { type: 'event', name: '移動 +2', move: 2 },
-    { type: 'property', name: '食堂', price: 200, fee: 50 },
+    { type: 'start', name: 'GO（スタート）', amount: 200 },
+
+    { type: 'property', name: '茶色1', price: 60, fee: 20 },
+    { type: 'property', name: '茶色2', price: 60, fee: 20 },
+
+    { type: 'event', name: 'チャンス', card: 'chance' },
+
+    { type: 'property', name: '水色1', price: 100, fee: 30 },
+    { type: 'property', name: '水色2', price: 100, fee: 30 },
+    { type: 'property', name: '水色3', price: 120, fee: 40 },
+
+    { type: 'railroad', name: '鉄道A', price: 200, fee: 50 },
+
+    { type: 'property', name: 'ピンク1', price: 140, fee: 50 },
+    { type: 'property', name: 'ピンク2', price: 140, fee: 50 },
+    { type: 'property', name: 'ピンク3', price: 160, fee: 60 },
+
+    { type: 'event', name: 'コミュニティ', card: 'community' },
+
+    { type: 'property', name: 'オレンジ1', price: 180, fee: 70 },
+    { type: 'property', name: 'オレンジ2', price: 180, fee: 70 },
+    { type: 'property', name: 'オレンジ3', price: 200, fee: 80 },
+
+    { type: 'jail', name: '刑務所（Just Visiting）' },
+
+    { type: 'property', name: '赤1', price: 220, fee: 90 },
+    { type: 'property', name: '赤2', price: 220, fee: 90 },
+    { type: 'property', name: '赤3', price: 240, fee: 100 },
+
+    { type: 'gotojail', name: '刑務所へ行け' },
   ];
 }
+
 
 let rooms = {};
 
