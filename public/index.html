@@ -6,21 +6,30 @@
 </head>
 <body>
 
-<h2>オンラインモノポリー風ゲーム</h2>
+<h2 class="title">
+  🎲 オンラインモノポリー風ゲーム
+</h2>
 
-<div>
+<div class="panel join-box">
+  <h3>ルームに参加</h3>
   <input id="room" placeholder="ルームID">
   <input id="name" placeholder="名前">
   <button onclick="joinGame()">参加</button>
 </div>
 
-<button onclick="rollDice()">サイコロを振る</button>
+<div class="panel control-box">
+  <button onclick="rollDice()">🎲 サイコロを振る</button>
+</div>
 
-<h3>盤面</h3>
-<div id="board"></div>
+<div class="panel">
+  <h3>📍 盤面</h3>
+  <div id="board"></div>
+</div>
 
-<h3>プレイヤー</h3>
-<div id="players"></div>
+<div class="panel">
+  <h3>👤 プレイヤー</h3>
+  <div id="players"></div>
+</div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="client.js"></script>
