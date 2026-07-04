@@ -7,6 +7,7 @@
 </head>
 <body>
 
+<!-- ルーム参加 -->
 <div class="join-box panel">
   <h3>ルーム参加</h3>
   <input id="room" placeholder="ルームID">
@@ -14,6 +15,7 @@
   <button onclick="joinGame()">参加</button>
 </div>
 
+<!-- サイコロ -->
 <div class="panel">
   <h3>🎲 サイコロ</h3>
   <div id="dice" class="dice"></div>
@@ -22,19 +24,23 @@
   <button id="roll-button" onclick="rollDice()">サイコロを振る</button>
 </div>
 
+<!-- 盤面 -->
 <div class="panel">
   <h3>📍 盤面</h3>
   <div class="board-square">
     <div id="board"></div>
+    <div id="player-layer"></div> <!-- 駒専用レイヤー -->
     <div id="players-center" class="players-center"></div>
   </div>
 </div>
 
+<!-- メッセージ -->
 <div class="panel">
   <h3>📢 メッセージ</h3>
   <div id="message-box">まだメッセージはありません</div>
 </div>
 
+<!-- 物件選択 -->
 <div id="choice-box" class="panel"></div>
 
 <!-- 左側チャット -->
