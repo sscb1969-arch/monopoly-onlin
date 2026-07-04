@@ -7,7 +7,6 @@
 </head>
 <body>
 
-<!-- ルーム参加 -->
 <div class="join-box panel">
   <h3>ルーム参加</h3>
   <input id="room" placeholder="ルームID">
@@ -15,7 +14,6 @@
   <button onclick="joinGame()">参加</button>
 </div>
 
-<!-- サイコロ -->
 <div class="panel">
   <h3>🎲 サイコロ</h3>
   <div id="dice" class="dice"></div>
@@ -24,35 +22,34 @@
   <button id="roll-button" onclick="rollDice()">サイコロを振る</button>
 </div>
 
-<!-- 盤面 -->
 <div class="panel">
   <h3>📍 盤面</h3>
   <div class="board-square">
     <div id="board"></div>
-    <div id="player-layer"></div> <!-- 駒専用レイヤー -->
+    <div id="player-layer"></div>
     <div id="players-center" class="players-center"></div>
   </div>
 </div>
 
-<!-- メッセージ -->
 <div class="panel">
   <h3>📢 メッセージ</h3>
   <div id="message-box">まだメッセージはありません</div>
 </div>
 
-<!-- 物件選択 -->
 <div id="choice-box" class="panel"></div>
 
-<!-- 左側チャット -->
+<!-- 左チャット（縮小可能） -->
 <div id="chat-panel" class="side-panel left">
+  <button class="toggle-btn" onclick="togglePanel('chat-panel')">縮小</button>
   <h3>💬 チャット</h3>
   <div id="chat-box" class="chat-box"></div>
   <input id="chat-input" placeholder="メッセージ">
   <button onclick="sendChat()">送信</button>
 </div>
 
-<!-- 右側ルール一覧 -->
+<!-- 右ルール（縮小可能） -->
 <div id="rules-panel" class="side-panel right">
+  <button class="toggle-btn" onclick="togglePanel('rules-panel')">縮小</button>
   <h3>📘 ルール</h3>
   <ul>
     <li>GOを通過すると +200</li>
@@ -60,9 +57,15 @@
     <li>同色コンプリートで家賃2倍</li>
     <li>家を建てると家賃アップ</li>
     <li>チャンス・コミュニティでイベント発生</li>
-    <li>刑務所はイベントマス扱い</li>
   </ul>
 </div>
+
+<script>
+function togglePanel(id) {
+  const panel = document.getElementById(id);
+  panel.classList.toggle("collapsed");
+}
+</script>
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="client.js"></script>
