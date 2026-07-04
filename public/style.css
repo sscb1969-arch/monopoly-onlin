@@ -91,18 +91,32 @@ button {
   border-radius: 50%;
 }
 
-/* サイコロ */
-.dice {
-  width: 60px;
-  height: 60px;
-  margin: 10px auto;
+/* サイコロ2つ */
+.dice-face {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  margin: 5px;
   background: #fff;
   border: 2px solid #333;
-  border-radius: 10px;
-  transition: transform 0.5s;
+  border-radius: 8px;
+  line-height: 40px;
+  font-size: 20px;
 }
 
-/* プレイヤー欄 */
+/* プレイヤー中央表示 */
+.players-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 220px;
+  transform: translate(-50%, -50%);
+  background: rgba(255,255,255,0.9);
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 0 5px #aaa;
+}
+
 .player {
   background: #fafafa;
   padding: 5px;
