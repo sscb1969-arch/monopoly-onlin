@@ -4,6 +4,7 @@ body {
   text-align: center;
 }
 
+/* 共通パネル */
 .panel {
   background: #fff;
   padding: 10px;
@@ -80,17 +81,27 @@ button {
   color: red;
 }
 
-/* プレイヤーアイコン（マス上） */
-.player-icon {
+/* 駒専用レイヤー */
+#player-layer {
   position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
+  top: 0;
+  left: 0;
+  width: 500px;
+  height: 500px;
+  pointer-events: none;
 }
 
-/* サイコロ2つ */
+/* プレイヤー駒（アニメーション付き） */
+.player-icon {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  transition: transform 0.5s ease;
+}
+
+/* サイコロ */
 .dice-face {
   display: inline-block;
   width: 40px;
@@ -101,6 +112,19 @@ button {
   border-radius: 8px;
   line-height: 40px;
   font-size: 20px;
+}
+
+/* サイコロアニメーション */
+@keyframes dice-roll {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(90deg); }
+  50% { transform: rotate(180deg); }
+  75% { transform: rotate(270deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.dice-face.animate {
+  animation: dice-roll 0.5s ease;
 }
 
 /* プレイヤー中央表示 */
@@ -144,6 +168,7 @@ button {
   right: 20px;
 }
 
+/* チャット欄 */
 .chat-box {
   height: 300px;
   overflow-y: auto;
