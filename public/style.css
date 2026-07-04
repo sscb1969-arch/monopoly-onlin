@@ -1,25 +1,81 @@
 body {
-  font-family: sans-serif;
-  padding: 10px;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  padding: 20px;
+  color: #fff;
 }
 
+/* タイトル */
+.title {
+  font-size: 32px;
+  text-align: center;
+  font-weight: 900;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  margin-bottom: 20px;
+}
+
+/* パネル（カードUI） */
+.panel {
+  background: rgba(0,0,0,0.25);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+}
+
+/* 入力欄 */
+input {
+  font-size: 18px;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  margin: 5px;
+  width: 45%;
+}
+
+/* ボタン（ゲームボタン風） */
+button {
+  font-size: 20px;
+  padding: 12px 20px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ff7675, #e84393);
+  border: none;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  margin: 8px 0;
+}
+button:active {
+  transform: scale(0.95);
+}
+
+/* 盤面（カードグリッド） */
 #board {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  gap: 12px;
 }
 
 .tile {
-  border: 1px solid #aaa;
-  padding: 10px;
-  background: #f8f8f8;
+  background: rgba(255,255,255,0.9);
+  border-radius: 14px;
+  padding: 15px;
   text-align: center;
-  border-radius: 6px;
+  font-weight: bold;
+  color: #333;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  transition: transform 0.1s;
+}
+.tile:hover {
+  transform: scale(1.05);
 }
 
+/* プレイヤーカード */
 .player {
-  margin: 5px 0;
-  padding: 8px;
-  background: #eef;
-  border-radius: 6px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 10px;
+  color: #333;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
